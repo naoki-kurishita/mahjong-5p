@@ -340,6 +340,7 @@
         .rank-2 { background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%); color: #333; }
         .rank-3 { background: linear-gradient(135deg, #cd7f32 0%, #e09856 100%); }
         .rank-4 { background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%); }
+        .rank-5 { background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%); }
 
         .player-name-cell {
             font-weight: 600;
@@ -780,7 +781,7 @@
                 </table>
             </div>
 
-            <button class="btn btn-primary" id="nextRoundBtn" onclick="switchTab('game')" style="margin-top: 20px;">
+            <button class="btn btn-primary" id="nextRoundBtn" onclick="goToNextRound()" style="margin-top: 20px;">
                 次の回戦へ
             </button>
 
@@ -1544,6 +1545,15 @@
             gameState.players = gameState.allPlayers.filter((_, i) => i !== gameState.spectatorIndex);
         }
 
+        // Called when "次の回戦へ" button is pressed
+        function goToNextRound() {
+            if (gameState.is5Player) {
+                showSpectatorChangePrompt();
+            } else {
+                switchTab('game');
+            }
+        }
+
         function showSpectatorChangePrompt() {
             const currentSpectator = gameState.allPlayers[gameState.spectatorIndex]?.name || '';
             const modal = document.getElementById('spectatorModal');
@@ -1558,6 +1568,7 @@
             sameBtn.onclick = () => {
                 modal.style.display = 'none';
                 setupScoreInputs();
+                switchTab('game');
             };
             options.appendChild(sameBtn);
 
@@ -1574,6 +1585,7 @@
                     showToast(`${player.name} が観戦します`);
                     saveGameState();
                     setupScoreInputs();
+                    switchTab('game');
                 };
                 options.appendChild(btn);
             });
@@ -2066,12 +2078,7 @@
             hideValidationError();
             updateScoreboard();
 
-            if (gameState.is5Player && editingRoundIndex === null) {
-                switchTab('scoreboard');
-                setTimeout(() => { showSpectatorChangePrompt(); }, 500);
-            } else {
-                switchTab('scoreboard');
-            }
+            switchTab('scoreboard');
         }
 
         // Update Scoreboard
