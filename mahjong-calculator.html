@@ -1390,6 +1390,10 @@
             if (tabName !== 'room' && !gameState.gameStarted) {
                 return;
             }
+            // Block setup tab while game is in progress (until room is dissolved)
+            if (tabName === 'setup' && gameState.gameStarted) {
+                return;
+            }
 
             // Update tab buttons
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
@@ -1437,10 +1441,16 @@
                     }
                 });
             } else {
-                // Enable all tabs
-                tabs.forEach(tab => {
-                    tab.style.opacity = '1';
-                    tab.style.pointerEvents = 'auto';
+                // Enable all tabs except setup (setup stays disabled during game)
+                tabs.forEach((tab, i) => {
+                    if (i === 1) {
+                        // Setup tab (index 1) - disabled while game is in progress
+                        tab.style.opacity = '0.4';
+                        tab.style.pointerEvents = 'none';
+                    } else {
+                        tab.style.opacity = '1';
+                        tab.style.pointerEvents = 'auto';
+                    }
                 });
             }
         }
