@@ -1444,12 +1444,12 @@
                 });
             }
 
-            // Disable setup content inputs/buttons while game is in progress
+            // Disable setup content inputs/buttons from round 2 onwards
             const setupContent = document.getElementById('setupContent');
             if (setupContent) {
                 const inputs = setupContent.querySelectorAll('input');
                 const buttons = setupContent.querySelectorAll('button');
-                const disabled = gameState.gameStarted;
+                const disabled = gameState.gameStarted && gameState.currentRound >= 2;
                 inputs.forEach(inp => {
                     inp.disabled = disabled;
                     inp.style.opacity = disabled ? '0.5' : '1';
