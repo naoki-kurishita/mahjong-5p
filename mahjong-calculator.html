@@ -1616,6 +1616,14 @@
                 options.appendChild(btn);
             });
 
+            const cancelBtn = document.createElement('button');
+            cancelBtn.style.cssText = 'margin-top: 8px; padding: 12px; font-size: 0.95em; font-weight: 600; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; color: #475569; cursor: pointer;';
+            cancelBtn.textContent = 'キャンセル';
+            cancelBtn.onclick = () => {
+                modal.style.display = 'none';
+            };
+            options.appendChild(cancelBtn);
+
             modal.style.display = 'flex';
         }
 
