@@ -1124,6 +1124,8 @@
 
                     // Update local game state from room
                     Object.assign(gameState, roomGameState);
+                    // Persist Firebase state to localStorage so reopen shows latest
+                    localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
                     updateUI();
                     updateScoreboard();
                     updateHistory();
@@ -1335,6 +1337,36 @@
 
             // Auto-reconnect to room if available
             autoReconnectToRoom();
+        });
+
+        // Force a refresh of game state from Firebase (used on visibility/bfcache restore)
+        function refreshGameStateFromFirebase() {
+            if (!currentRoomRef) return;
+            console.log('🔄 Refreshing gameState from Firebase');
+            currentRoomRef.child('gameState').once('value').then((snapshot) => {
+                const roomGameState = snapshot.val();
+                if (roomGameState) {
+                    Object.assign(gameState, roomGameState);
+                    localStorage.setItem('mahjongGameState', JSON.stringify(gameState));
+                    updateUI();
+                    updateScoreboard();
+                    updateHistory();
+                }
+            }).catch((err) => console.warn('refresh failed:', err));
+        }
+
+        // Refresh when the tab becomes visible again (e.g. PWA wake-up)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                refreshGameStateFromFirebase();
+            }
+        });
+
+        // Refresh when restored from bfcache (browser back/forward cache)
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                refreshGameStateFromFirebase();
+            }
         });
         
         // Auto-reconnect to saved room
